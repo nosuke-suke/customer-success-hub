@@ -9,6 +9,7 @@ import NewsCard from "@/components/news-card"
 import NewsSlider from "@/components/news-slider"
 import PageHeader from "@/components/page-header"
 
+
 interface NewsItem {
   id: number
   title: string

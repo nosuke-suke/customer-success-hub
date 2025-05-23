@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Company {
+  id          String          @id @default(uuid()) @db.Uuid
+  name        String
+  logo_url    String?
+  website_url String?
+  created_at  DateTime        @default(now())
+  metrics     CompanyMetric[]
+}
+
+model Metric {
+  id          String          @id @default(uuid()) @db.Uuid
+  name        String
+  unit        String
+  description String?
+  metrics     CompanyMetric[]
+}
+
+model CompanyMetric {
+  id         String   @id @default(uuid()) @db.Uuid
+  company    Company  @relation(fields: [company_id], references: [id])
+  company_id String   @db.Uuid
+  metric     Metric   @relation(fields: [metric_id], references: [id])
+  metric_id  String   @db.Uuid
+  date       DateTime @db.Date
+  value      Float
+  created_at DateTime @default(now())
+
+  @@index([company_id])
+  @@index([metric_id])
+  @@index([date])
+}

@@ -6,6 +6,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import SplashCursor from "@/components/SplashCursor/SplashCursor"
 
 // Interフォントの設定（Latin文字セットのみ）
 const inter = Inter({ subsets: ["latin"] })
@@ -13,7 +14,7 @@ const inter = Inter({ subsets: ["latin"] })
 // メタデータの設定
 export const metadata: Metadata = {
   title: "サクセスの森",
-  description: "「サクセスの森」は、カスタマーサクセス(CS)をやさしく深く学べる情報サイトです。はじめてCSにふれる方から、実務で悩む現場の方まで、すべての“サクセスの旅人”を応援します。基礎から実践ノウハウまで、わかりやすく、今すぐ使えるヒントをぎゅっと詰め込みました。あなたのCSの冒険が、ここから始まります。",
+  description: "「サクセスの森」は、カスタマーサクセス(CS)をやさしく深く学べる情報サイトです。はじめてCSにふれる方から、実務で悩む現場の方まで、すべてのサクセスの旅人を応援します。基礎から実践ノウハウまで、わかりやすく、今すぐ使えるヒントをぎゅっと詰め込みました。あなたのCSの冒険が、ここから始まります。",
 }
 
 // ルートレイアウトコンポーネント
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body className={inter.className}>
         {/* テーマプロバイダーでアプリケーション全体をラップ */}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <SplashCursor />
           <Navbar />
           <main>{children}</main>
           <Footer />
