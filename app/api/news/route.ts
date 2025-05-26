@@ -98,14 +98,31 @@ export async function GET() {
   const apiKey = process.env.TAVILY_API_KEY;
   
   if (!apiKey) {
-    console.error('TAVILY_API_KEY is missing in environment variables');
+    console.error('環境変数TAVILY_API_KEYが設定されていません');
     return NextResponse.json(
-      { error: 'API key is not configured' },
+      { 
+        error: 'API key is not configured',
+        message: '環境変数TAVILY_API_KEYが設定されていません。開発者に連絡してください。',
+        details: 'APIキーが環境変数に設定されていません。.env.localファイルまたはVercelの環境変数で設定してください。'
+      },
       { status: 500 }
     );
   }
 
   try {
+    // APIキーの形式を簡易チェック
+    if (!apiKey.match(/^tvly-/)) {
+      console.error('無効なTavily APIキーの形式です');
+      return NextResponse.json(
+        {
+          error: 'Invalid API key format',
+          message: 'APIキーの形式が正しくありません。',
+          details: 'Tavily APIキーは"tvly-"で始まる必要があります。'
+        },
+        { status: 400 }
+      );
+    }
+
     const requestBody = {
       query: 'カスタマーサクセス customer success 最新ニュース',
       search_depth: 'advanced',
@@ -131,16 +148,21 @@ export async function GET() {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Tavily API Error:', {
+      const errorDetails = {
         status: response.status,
         statusText: response.statusText,
-        error: errorText
-      });
+        error: errorText,
+        message: response.status === 401 
+          ? 'APIキーが無効または期限切れです。Tavilyダッシュボードで確認してください。'
+          : 'APIリクエストに失敗しました。'
+      };
+      
+      console.error('Tavily API Error:', errorDetails);
+      
       return NextResponse.json(
         { 
           error: 'API request failed',
-          details: errorText,
-          status: response.status
+          ...errorDetails
         },
         { status: response.status }
       );

@@ -17,19 +17,37 @@ export interface QiitaArticle {
 }
 
 export async function fetchQiitaArticles(tag: string): Promise<QiitaArticle[]> {
-  const response = await fetch(
-    `https://qiita.com/api/v2/items?query=tag:${encodeURIComponent(tag)}&per_page=20&sort=created`,
-    {
-      headers: {
-        "Authorization": `Bearer ${process.env.QIITA_ACCESS_TOKEN}`,
-      },
-      next: { revalidate: 3600 } // 1時間ごとにキャッシュを更新
-    }
-  )
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch Qiita articles")
+  const token = process.env.QIITA_ACCESS_TOKEN;
+  
+  if (!token) {
+    console.error('環境変数QIITA_ACCESS_TOKENが設定されていません');
+    return [];
   }
 
-  return response.json()
+  try {
+    const response = await fetch(
+      `https://qiita.com/api/v2/items?query=tag:${encodeURIComponent(tag)}&per_page=20&sort=created`,
+      {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+        next: { revalidate: 3600 } // 1時間ごとにキャッシュを更新
+      }
+    )
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error("Qiita API Error:", {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData
+      });
+      return [];
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Qiita記事の取得に失敗しました:", error);
+    return [];
+  }
 } 
