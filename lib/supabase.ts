@@ -14,4 +14,16 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   }
 });
 
+// メール認証のリダイレクトURLを設定
+if (typeof window !== 'undefined') {
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) {
+      supabase.auth.setSession({
+        access_token: session.access_token,
+        refresh_token: session.refresh_token
+      });
+    }
+  });
+}
+
 export { supabase };

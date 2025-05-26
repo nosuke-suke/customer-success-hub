@@ -8,31 +8,23 @@ export default function AuthCallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const handleAuthCallback = async () => {
-      try {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        
-        if (error) {
-          throw error;
-        }
-
-        if (user) {
-          router.push('/');
-        }
-      } catch (error) {
-        console.error('認証エラー:', error);
-        router.push('/auth/login');
+    // URLからハッシュパラメータを取得して処理
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        // 認証成功時のリダイレクト
+        router.push('/dashboard'); // または適切なページへ
+      } else {
+        // 認証失敗時のリダイレクト
+        router.push('/auth/signin');
       }
-    };
-
-    handleAuthCallback();
+    });
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F7FCFA]">
+    <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#BDEBD2] mx-auto mb-4"></div>
-        <p className="text-gray-600">認証中...</p>
+        <h2 className="text-xl font-semibold mb-4">認証処理中...</h2>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
       </div>
     </div>
   );
