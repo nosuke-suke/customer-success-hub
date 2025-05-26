@@ -152,15 +152,14 @@ export async function GET() {
     const formattedData = rawData.results.map((article: any, index: number) => {
       const domain = new URL(article.url).hostname;
       return {
-        id: index,
+        id: String(index),
         title: fixCharacterEncoding(article.title || '無題', domain),
-        source: extractSource(article.url),
+        description: fixCharacterEncoding(article.content || article.snippet || article.title, domain),
         date: new Date(article.published_date || Date.now()).toLocaleDateString('ja-JP', {
           year: 'numeric',
           month: 'long',
           day: 'numeric'
         }),
-        summary: fixCharacterEncoding(article.content || article.snippet || article.title, domain),
         imageUrl: getRandomImageUrl(),
         url: article.url,
       };

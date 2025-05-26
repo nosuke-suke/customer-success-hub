@@ -5,16 +5,7 @@ import Image from "next/image"
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-
-interface NewsItem {
-  id: number
-  title: string
-  source: string
-  date: string
-  summary: string
-  imageUrl: string
-  url: string
-}
+import { NewsItem } from "@/types/news"
 
 interface NewsSliderProps {
   newsItems: NewsItem[]
@@ -68,10 +59,10 @@ export default function NewsSlider({ newsItems }: NewsSliderProps) {
             <Image src={item.imageUrl || "/placeholder.svg"} alt={item.title} fill className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-6 text-white">
               <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
-              <p className="mb-4 line-clamp-2">{item.summary}</p>
+              <p className="mb-4 line-clamp-2">{item.description}</p>
               <div className="flex justify-between items-center">
                 <span className="text-sm opacity-80">
-                  {item.date} | {item.source}
+                  {item.date}
                 </span>
                 <Button className="bg-[#BDEBD2] hover:bg-[#A5D6BA] text-gray-800">
                   <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">

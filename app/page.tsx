@@ -262,7 +262,10 @@ export default function Home() {
                 ))
               ) : (
                 newsItems.map((item) => (
-                  <NewsCard key={item.id} {...item} />
+                  <NewsCard
+                    key={item.id}
+                    {...item}
+                  />
                 ))
               )}
             </div>

@@ -8,17 +8,7 @@ import FadeInSection from "@/components/fade-in-section"
 import NewsCard from "@/components/news-card"
 import NewsSlider from "@/components/news-slider"
 import PageHeader from "@/components/page-header"
-
-
-interface NewsItem {
-  id: number
-  title: string
-  source: string
-  date: string
-  summary: string
-  imageUrl: string
-  url: string
-}
+import { NewsItem } from "@/types/news"
 
 // ニュースサイトのドメインリスト
 const NEWS_DOMAINS = [
@@ -84,7 +74,7 @@ export default function NewsPage() {
   const filteredNews = newsItems.filter(
     (item) =>
       item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.summary.toLowerCase().includes(searchTerm.toLowerCase()),
+      item.description.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
   // Sort news based on sort order

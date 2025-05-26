@@ -2,18 +2,11 @@ import Image from "next/image"
 import { ExternalLink, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { NewsItem } from "@/types/news"
 
-interface NewsCardProps {
-  id: number
-  title: string
-  source: string
-  date: string
-  summary: string
-  imageUrl: string
-  url: string
-}
+type NewsCardProps = NewsItem
 
-export default function NewsCard({ title, source, date, summary, imageUrl, url }: NewsCardProps) {
+export default function NewsCard({ title, description, date, imageUrl, url }: NewsCardProps) {
   return (
     <Card className="bg-white shadow hover:shadow-lg transition-all duration-300 h-full flex flex-col">
       <div className="relative h-48 w-full">
@@ -23,11 +16,11 @@ export default function NewsCard({ title, source, date, summary, imageUrl, url }
         <CardTitle className="line-clamp-2">{title}</CardTitle>
         <CardDescription className="flex items-center gap-1">
           <Calendar size={14} />
-          {date} | {source}
+          {date}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-grow">
-        <p className="text-gray-700 line-clamp-3">{summary}</p>
+        <p className="text-gray-700 line-clamp-3">{description}</p>
       </CardContent>
       <CardFooter>
         <Button className="w-full bg-[#BDEBD2] hover:bg-[#A5D6BA] text-gray-800">
