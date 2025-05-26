@@ -6,7 +6,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
-import SplashCursor from "@/components/SplashCursor/SplashCursor"
+import BlobCursor from "@/components/BlobCursor/BlobCursor"
 
 // Interフォントの設定（Latin文字セットのみ）
 const inter = Inter({ subsets: ["latin"] })
@@ -29,7 +29,7 @@ export default function RootLayout({
       <body className={inter.className}>
         {/* テーマプロバイダーでアプリケーション全体をラップ */}
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <SplashCursor />
+          <BlobCursor />
           <Navbar />
           <main>{children}</main>
           <Footer />

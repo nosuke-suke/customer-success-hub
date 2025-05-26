@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Menu, X } from "lucide-react"
+import { usePathname, useRouter } from "next/navigation"
+import { Menu, X, LogIn, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useMobile } from "@/hooks/use-mobile"
+import { supabase } from "@/lib/supabase"
+import { User } from "@supabase/supabase-js"
 
 // ナビゲーションアイテムの型定義
 interface NavItem {
@@ -33,6 +35,8 @@ export default function Navbar() {
   // スクロール状態を管理
   const [scrolled, setScrolled] = useState(false)
   const isMobile = useMobile()
+  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null)
 
   // スクロールイベントのハンドラーを設定
   useEffect(() => {
@@ -43,6 +47,34 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
+
+  useEffect(() => {
+    // 現在のユーザー状態を取得
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+
+    getCurrentUser()
+
+    // ユーザーの認証状態の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error("ログアウトエラー:", error.message)
+    } else {
+      router.push("/")
+    }
+  }
 
   return (
     <nav
@@ -61,7 +93,7 @@ export default function Navbar() {
           </div>
 
           {/* デスクトップ用ナビゲーション */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-4">
             {navItems.map((item) => (
               <Link
                 key={item.name}
@@ -76,6 +108,30 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
+            {user ? (
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+              >
+                <LogOut size={18} />
+                ログアウト
+              </Button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link href="/auth/login">
+                  <Button variant="ghost" className="flex items-center gap-2 text-gray-700 hover:text-gray-900">
+                    <LogIn size={18} />
+                    ログイン
+                  </Button>
+                </Link>
+                <Link href="/auth/signup">
+                  <Button className="bg-[#BDEBD2] hover:bg-[#A5D6BA] text-gray-900">
+                    新規登録
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* モバイル用メニューボタン */}
@@ -106,6 +162,33 @@ export default function Navbar() {
                 {item.name}
               </Link>
             ))}
+            {user ? (
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-[#DFF5E1] hover:text-gray-900 flex items-center gap-2"
+              >
+                <LogOut size={18} />
+                ログアウト
+              </button>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-[#DFF5E1] hover:text-gray-900 flex items-center gap-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <LogIn size={18} />
+                  ログイン
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="block px-3 py-2 rounded-md text-base font-medium bg-[#BDEBD2] text-gray-900 hover:bg-[#A5D6BA] mt-2"
+                  onClick={() => setIsOpen(false)}
+                >
+                  新規登録
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}

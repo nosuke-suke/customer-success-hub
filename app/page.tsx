@@ -1,11 +1,37 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, BookOpen, FileText, TrendingUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import FadeInSection from "@/components/fade-in-section"
+import NewsCard from "@/components/news-card"
+import { NewsItem } from "@/types/news"
 
 export default function Home() {
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const response = await fetch('/api/news')
+        const data = await response.json()
+        if (data.results) {
+          setNewsItems(data.results.slice(0, 3))
+        }
+      } catch (error) {
+        console.error('Failed to fetch news:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchNews()
+  }, [])
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -18,7 +44,7 @@ export default function Home() {
               </h1>
               <p className="text-xl text-gray-700 mb-8">
               <br></br>ようこそ、「サクセスの森」へ。
-              <br></br>カスタマーサクセスを“知る”と“使う”が、ここでつながります。
+              <br></br>カスタマーサクセスを"知る"と"使う"が、ここでつながります。
               <br></br>実務にも役立つヒントが、きっと見つかります。
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
@@ -216,27 +242,29 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[1, 2, 3].map((item) => (
-                <Card key={item} className="bg-white shadow hover:shadow-lg transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="line-clamp-2">SaaS企業のカスタマーサクセス最新動向</CardTitle>
-                    <CardDescription>2023年10月15日</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="line-clamp-3">
-                      最新のカスタマーサクセス戦略とSaaS企業の成長についての分析記事です。
-                      顧客維持率向上のための実践的なアプローチを紹介しています。
-                    </p>
-                  </CardContent>
-                  <CardFooter>
-                    <Button variant="link" className="px-0">
-                      <Link href="#" className="flex items-center gap-1 text-[#4CAF50]">
-                        続きを読む <ArrowRight size={14} />
-                      </Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+              {isLoading ? (
+                // ローディング表示
+                Array(3).fill(null).map((_, index) => (
+                  <Card key={index} className="bg-white shadow animate-pulse">
+                    <div className="h-48 bg-gray-200 rounded-t-lg" />
+                    <CardHeader>
+                      <div className="h-6 bg-gray-200 rounded w-3/4" />
+                      <div className="h-4 bg-gray-200 rounded w-1/2 mt-2" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <div className="h-4 bg-gray-200 rounded" />
+                        <div className="h-4 bg-gray-200 rounded w-5/6" />
+                        <div className="h-4 bg-gray-200 rounded w-4/6" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                newsItems.map((item) => (
+                  <NewsCard key={item.id} {...item} />
+                ))
+              )}
             </div>
           </div>
         </section>
