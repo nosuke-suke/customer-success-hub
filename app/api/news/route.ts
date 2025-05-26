@@ -160,10 +160,7 @@ export async function GET() {
       console.error('Tavily API Error:', errorDetails);
       
       return NextResponse.json(
-        { 
-          error: 'API request failed',
-          ...errorDetails
-        },
+        errorDetails,
         { status: response.status }
       );
     }
