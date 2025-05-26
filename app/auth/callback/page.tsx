@@ -8,16 +8,23 @@ export default function AuthCallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // URLからハッシュパラメータを取得して処理
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        // 認証成功時のリダイレクト
-        router.push('/dashboard'); // または適切なページへ
-      } else {
-        // 認証失敗時のリダイレクト
+    const handleAuthCallback = async () => {
+      try {
+        const { error } = await supabase.auth.getSession();
+        
+        if (error) {
+          throw error;
+        }
+
+        // 認証成功後のリダイレクト
+        router.push('/dashboard');
+      } catch (error) {
+        console.error('認証エラー:', error);
         router.push('/auth/signin');
       }
-    });
+    };
+
+    handleAuthCallback();
   }, [router]);
 
   return (

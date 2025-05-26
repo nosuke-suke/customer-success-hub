@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import BlobCursor from "@/components/BlobCursor/BlobCursor"
+import SupabaseAuthProvider from "@/components/providers/supabase-auth-provider"
 
 // Interフォントの設定（Latin文字セットのみ）
 const inter = Inter({ subsets: ["latin"] })
@@ -27,13 +28,15 @@ export default function RootLayout({
     // 言語設定とhydrationの警告を抑制
     <html lang="ja" suppressHydrationWarning>
       <body className={inter.className}>
-        {/* テーマプロバイダーでアプリケーション全体をラップ */}
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <BlobCursor />
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-        </ThemeProvider>
+        <SupabaseAuthProvider>
+          {/* テーマプロバイダーでアプリケーション全体をラップ */}
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+            <BlobCursor />
+            <Navbar />
+            <main>{children}</main>
+            <Footer />
+          </ThemeProvider>
+        </SupabaseAuthProvider>
       </body>
     </html>
   )

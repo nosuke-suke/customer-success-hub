@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from 'next/link'
+import { useAuth } from '@/components/providers/supabase-auth-provider'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -14,6 +15,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
+  const { user } = useAuth()
+
+  // ユーザーが既にログインしている場合はリダイレクト
+  if (user) {
+    router.push('/')
+    return null
+  }
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault()
@@ -21,23 +29,30 @@ export default function LoginPage() {
     setError(null)
 
     try {
+      console.log('ログイン処理開始:', email);
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-      })
+      });
+
+      console.log('認証結果:', { data, error });
 
       if (error) {
-        throw error
+        console.error('認証エラー詳細:', error);
+        throw error;
       }
 
-      if (data.user) {
-        router.push('/')
-        router.refresh()
+      if (data?.user) {
+        console.log('ログイン成功、リダイレクト開始');
+        router.push('/');
+        router.refresh();
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'ログインに失敗しました')
+      console.error('ログインエラー:', error);
+      setError(error instanceof Error ? error.message : 'ログインに失敗しました');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 

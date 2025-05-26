@@ -12,8 +12,12 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
+import BookLikeButton from "./BookLikeButton"
+import BookReviews from "./BookReviews"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 interface BookCardProps {
+    id: string
     title: string
     author: string
     description: string
@@ -22,8 +26,7 @@ interface BookCardProps {
     amazonUrl: string
 }
 
-
-export default function BookCard({ title, author, description, category, imageUrl, amazonUrl }: BookCardProps) {
+export default function BookCard({ id, title, author, description, category, imageUrl, amazonUrl }: BookCardProps) {
     const truncatedDescription =
         description.length > 60 ? description.slice(0, 80) + "..." : description;
     const DialogDesc =
@@ -61,42 +64,58 @@ export default function BookCard({ title, author, description, category, imageUr
                     <DialogTrigger asChild>
                         <Button variant="outline">詳細を見る</Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-md">
+                    <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                             <DialogTitle>{title}</DialogTitle>
                             <DialogDescription>{author}</DialogDescription>
                         </DialogHeader>
-                        <div className="flex flex-col sm:flex-row gap-6 py-4">
-                            <div className="flex-shrink-0 mx-auto sm:mx-0">
-                                <Image
-                                    src={imageUrl || "/placeholder.svg"}
-                                    alt={title}
-                                    width={150}
-                                    height={225}
-                                    className="rounded shadow"
-                                />
-                            </div>
-                            <div>
-                                <Badge className="mb-4 bg-[#DFF5E1] text-gray-800 hover:bg-[#BDEBD2]">{category}</Badge>
-                                <p className="text-gray-700 mb-4">{DialogDesc}</p>
-                                <p className="text-gray-700 mb-4">
-                                    この本はカスタマーサクセスの
-                                    {category === "入門編"
-                                        ? "基礎知識を身につけたい方"
-                                        : category === "実務編"
-                                            ? "実践的なスキルを磨きたい方"
-                                            : "マネジメントスキルを向上させたい方"}
-                                    におすすめです。
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex justify-end">
-                            <Button className="bg-[#BDEBD2] hover:bg-[#A5D6BA] text-gray-800">
-                                <a href={amazonUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                                    Amazonで見る <ExternalLink size={16} />
-                                </a>
-                            </Button>
-                        </div>
+                        <Tabs defaultValue="details" className="w-full">
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="details">詳細情報</TabsTrigger>
+                                <TabsTrigger value="reviews">レビュー</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="details">
+                                <div className="flex flex-col sm:flex-row gap-6 py-4">
+                                    <div className="flex-shrink-0 mx-auto sm:mx-0">
+                                        <Image
+                                            src={imageUrl || "/placeholder.svg"}
+                                            alt={title}
+                                            width={150}
+                                            height={225}
+                                            className="rounded shadow"
+                                        />
+                                        <div className="mt-4 flex justify-center">
+                                            <BookLikeButton bookId={id} />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <Badge className="mb-4 bg-[#DFF5E1] text-gray-800 hover:bg-[#BDEBD2]">{category}</Badge>
+                                        <p className="text-gray-700 mb-4">{DialogDesc}</p>
+                                        <p className="text-gray-700 mb-4">
+                                            この本はカスタマーサクセスの
+                                            {category === "入門編"
+                                                ? "基礎知識を身につけたい方"
+                                                : category === "実務編"
+                                                    ? "実践的なスキルを磨きたい方"
+                                                    : "マネジメントスキルを向上させたい方"}
+                                            におすすめです。
+                                        </p>
+                                        <div className="flex justify-end">
+                                            <Button className="bg-[#BDEBD2] hover:bg-[#A5D6BA] text-gray-800">
+                                                <a href={amazonUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                                                    Amazonで見る <ExternalLink size={16} />
+                                                </a>
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </TabsContent>
+                            <TabsContent value="reviews">
+                                <div className="py-4">
+                                    <BookReviews bookId={id} />
+                                </div>
+                            </TabsContent>
+                        </Tabs>
                     </DialogContent>
                 </Dialog>
 
