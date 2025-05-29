@@ -106,6 +106,17 @@ export default function TrendsPage() {
     return formattedData
   }
 
+  // Y軸の値をフォーマットする関数を追加
+  const formatYAxisValue = (value: number, unit: string) => {
+    if (value >= 100000000) {
+      return `${(value / 100000000).toFixed(1)}億${unit}`
+    } else if (value >= 10000) {
+      return `${(value / 10000).toFixed(1)}万${unit}`
+    } else {
+      return `${value.toLocaleString()}${unit}`
+    }
+  }
+
   if (loading) return <div className="flex justify-center items-center min-h-screen">読み込み中...</div>
   if (error) return <div className="flex justify-center items-center min-h-screen text-red-500">{error}</div>
 
@@ -116,9 +127,15 @@ export default function TrendsPage() {
     <div className="min-h-screen">
       <PageHeader
         title="SaaS成長トレンド"
-        description="主要SaaS企業の成長指標の推移をグラフで確認できます"
+        description="主要SaaS企業の成長指標の推移をグラフで確認できます（※データはダミーデータです）"
       />
       <div className="container mx-auto px-4 py-8">
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800">
+            <strong>注意:</strong> このページのデータはダミーデータです。実際のSaaS企業のデータではありません。
+          </p>
+        </div>
+        
         <Tabs defaultValue={metrics[0]?.name} className="w-full">
           <TabsList className="mb-8">
             {metrics.map(metric => (
@@ -141,7 +158,7 @@ export default function TrendsPage() {
                 <CardContent>
                   <div className="h-[500px] w-full">
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={chartData}>
+                      <LineChart data={chartData} margin={{ left: 20, right: 20, top: 20, bottom: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis
                           dataKey="formattedDate"
@@ -149,9 +166,9 @@ export default function TrendsPage() {
                           minTickGap={50}
                         />
                         <YAxis
-                          unit={currentMetric?.unit}
-                          width={80}
+                          width={120}
                           domain={['auto', 'auto']}
+                          tickFormatter={(value) => formatYAxisValue(value, currentMetric?.unit || '')}
                         />
                         <Tooltip
                           formatter={(value: number) => [
